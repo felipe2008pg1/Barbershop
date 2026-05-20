@@ -1,4 +1,4 @@
-## This project is avaliable just in version PT-BR. 🇧🇷
+## This project is available just in version PT-BR. 🇧🇷
 
 
 # ✂️ BarberShop – Sistema de Agendamentos
