@@ -1,3 +1,6 @@
+## This project are avaliable just in version PT-BR. <img width="1919" height="1079" alt="image" src="https://github.com/user-attachments/assets/77c217b4-58d5-4dbe-8b0f-60c06117ab5b" />
+
+
 # ✂️ BarberShop – Sistema de Agendamentos
 
 Sistema web para gerenciamento de agendamentos de barbearia, desenvolvido com **FastAPI** (backend) e **HTML/CSS/JS** (frontend).
