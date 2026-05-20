@@ -1,4 +1,4 @@
-## This project are avaliable just in version PT-BR. <img width="1919" height="1079" alt="image" src="https://github.com/user-attachments/assets/77c217b4-58d5-4dbe-8b0f-60c06117ab5b" />
+## This project are avaliable just in version PT-BR. 🇧🇷
 
 
 # ✂️ BarberShop – Sistema de Agendamentos
