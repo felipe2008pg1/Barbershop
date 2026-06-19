@@ -1,41 +1,41 @@
 ## This project was originally written in Portuguese and then translated into English. 🇧🇷 🇺🇸
 
 
-# ✂️ BarberShop – Sistema de Agendamentos
+# ✂️ BarberShop – Scheduling System
 
-Sistema web para gerenciamento de agendamentos de barbearia, desenvolvido com **FastAPI** (backend) e **HTML/CSS/JS** (frontend).
+Web-based system for managing barber shop appointments, developed with **FastAPI** (backend) and **HTML/CSS/JS** (frontend).
 
-## 🚀 Funcionalidades
+## 🚀 Features
 
-- Agendar horário com nome, serviço, data e telefone
-- Verificação automática de conflito de horários
-- Visualizar agenda por data
-- Editar agendamentos existentes
-- Cancelar agendamentos
-
-## 🛠️ Tecnologias
+- Schedule an appointment with name, service, date, and phone number.
+- Automatic scheduling conflict check.
+- View schedule by date.
+- Edit existing appointments.
+- Cancel appointments.
+  
+## 🛠️ Technologies
 
 - Python + FastAPI
 - Uvicorn
 - Jinja2
 - HTML5 / CSS3 / JavaScript
 
-## ⚙️ Como rodar
+## ⚙️ How to run
 
 ```bash
-# Instalar dependências
+# Install dependences
 pip install -r requirements.txt
 
-# Iniciar servidor
+# Start server
 uvicorn app.main:app --reload
 ```
 
-Acesse: http://localhost:8000
+Acess: http://localhost:8000
 
-## 📁 Estrutura
+## 📁 Structure
 
 ```
-barbearia/
+barbershop/
 ├── app/main.py
 ├── static/css/style.css
 ├── static/js/app.js
