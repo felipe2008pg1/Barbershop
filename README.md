@@ -1,4 +1,4 @@
-## This project is available just in version PT-BR. 🇧🇷
+## This project was originally written in Portuguese and then translated into English. 🇧🇷 🇺🇸
 
 
 # ✂️ BarberShop – Sistema de Agendamentos
