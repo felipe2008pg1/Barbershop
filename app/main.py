@@ -16,7 +16,6 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 app.mount("/static", StaticFiles(directory=os.path.join(BASE_DIR, "static")), name="static")
 templates = Jinja2Templates(directory=os.path.join(BASE_DIR, "templates"))
 
-
 def load_appointments():
     db = os.path.join(BASE_DIR, "appointments.json")
     if not os.path.exists(db):
@@ -24,12 +23,10 @@ def load_appointments():
     with open(db, "r", encoding="utf-8") as f:
         return json.load(f)
 
-
 def save_appointments(appointments):
     db = os.path.join(BASE_DIR, "appointments.json")
     with open(db, "w", encoding="utf-8") as f:
         json.dump(appointments, f, ensure_ascii=False, indent=2)
-
 
 class Appointment(BaseModel):
     name: str
@@ -38,7 +35,6 @@ class Appointment(BaseModel):
     time: str
     phone: Optional[str] = ""
 
-
 class AppointmentUpdate(BaseModel):
     name: Optional[str] = None
     service: Optional[str] = None
@@ -46,11 +42,9 @@ class AppointmentUpdate(BaseModel):
     time: Optional[str] = None
     phone: Optional[str] = None
 
-
 @app.get("/", response_class=HTMLResponse)
 async def index(request: Request):
     return templates.TemplateResponse(request, "index.html")
-
 
 @app.get("/api/appointments")
 def list_appointments(date: Optional[str] = None):
@@ -59,7 +53,6 @@ def list_appointments(date: Optional[str] = None):
         appointments = [a for a in appointments if a["date"] == date]
     appointments.sort(key=lambda x: (x["date"], x["time"]))
     return appointments
-
 
 @app.post("/api/appointments", status_code=201)
 def create_appointment(appointment: Appointment):
@@ -82,7 +75,6 @@ def create_appointment(appointment: Appointment):
     appointments.append(new)
     save_appointments(appointments)
     return new
-
 
 @app.put("/api/appointments/{id}")
 def update_appointment(id: int, data: AppointmentUpdate):
@@ -118,7 +110,6 @@ def update_appointment(id: int, data: AppointmentUpdate):
     appointments[idx] = updated
     save_appointments(appointments)
     return updated
-
 
 @app.delete("/api/appointments/{id}", status_code=204)
 def cancel_appointment(id: int):
