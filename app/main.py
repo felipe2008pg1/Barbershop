@@ -9,7 +9,7 @@ import json
 import os
 from datetime import datetime
 
-app = FastAPI(title="Barbearia - Sistema de Agendamentos")
+app = FastAPI(title="Barbershop - Appointment Scheduling System")
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -17,34 +17,34 @@ app.mount("/static", StaticFiles(directory=os.path.join(BASE_DIR, "static")), na
 templates = Jinja2Templates(directory=os.path.join(BASE_DIR, "templates"))
 
 
-def carregar_agendamentos():
-    db = os.path.join(BASE_DIR, "agendamentos.json")
+def load_appointments():
+    db = os.path.join(BASE_DIR, "appointments.json")
     if not os.path.exists(db):
         return []
     with open(db, "r", encoding="utf-8") as f:
         return json.load(f)
 
 
-def salvar_agendamentos(agendamentos):
-    db = os.path.join(BASE_DIR, "agendamentos.json")
+def save_appointments(appointments):
+    db = os.path.join(BASE_DIR, "appointments.json")
     with open(db, "w", encoding="utf-8") as f:
-        json.dump(agendamentos, f, ensure_ascii=False, indent=2)
+        json.dump(appointments, f, ensure_ascii=False, indent=2)
 
 
-class Agendamento(BaseModel):
-    nome: str
-    servico: str
-    data: str
-    horario: str
-    telefone: Optional[str] = ""
+class Appointment(BaseModel):
+    name: str
+    service: str
+    date: str
+    time: str
+    phone: Optional[str] = ""
 
 
-class AgendamentoUpdate(BaseModel):
-    nome: Optional[str] = None
-    servico: Optional[str] = None
-    data: Optional[str] = None
-    horario: Optional[str] = None
-    telefone: Optional[str] = None
+class AppointmentUpdate(BaseModel):
+    name: Optional[str] = None
+    service: Optional[str] = None
+    date: Optional[str] = None
+    time: Optional[str] = None
+    phone: Optional[str] = None
 
 
 @app.get("/", response_class=HTMLResponse)
@@ -52,72 +52,80 @@ async def index(request: Request):
     return templates.TemplateResponse(request, "index.html")
 
 
-@app.get("/api/agendamentos")
-def listar_agendamentos(data: Optional[str] = None):
-    agendamentos = carregar_agendamentos()
-    if data:
-        agendamentos = [a for a in agendamentos if a["data"] == data]
-    agendamentos.sort(key=lambda x: (x["data"], x["horario"]))
-    return agendamentos
+@app.get("/api/appointments")
+def list_appointments(date: Optional[str] = None):
+    appointments = load_appointments()
+    if date:
+        appointments = [a for a in appointments if a["date"] == date]
+    appointments.sort(key=lambda x: (x["date"], x["time"]))
+    return appointments
 
 
-@app.post("/api/agendamentos", status_code=201)
-def criar_agendamento(agendamento: Agendamento):
-    agendamentos = carregar_agendamentos()
-    conflito = any(
-        a["data"] == agendamento.data and a["horario"] == agendamento.horario
-        for a in agendamentos
+@app.post("/api/appointments", status_code=201)
+def create_appointment(appointment: Appointment):
+    appointments = load_appointments()
+    conflict = any(
+        a["date"] == appointment.date and a["time"] == appointment.time
+        for a in appointments
     )
-    if conflito:
-        raise HTTPException(status_code=409, detail="Já existe um agendamento nesse horário.")
-    novo = {
+    if conflict:
+        raise HTTPException(status_code=409, detail="An appointment already exists for this time.")
+    new = {
         "id": int(datetime.now().timestamp() * 1000),
-        "nome": agendamento.nome.strip(),
-        "servico": agendamento.servico,
-        "data": agendamento.data,
-        "horario": agendamento.horario,
-        "telefone": agendamento.telefone.strip(),
-        "criado_em": datetime.now().isoformat()
+        "name": appointment.name.strip(),
+        "service": appointment.service,
+        "date": appointment.date,
+        "time": appointment.time,
+        "phone": appointment.phone.strip(),
+        "created_at": datetime.now().isoformat()
     }
-    agendamentos.append(novo)
-    salvar_agendamentos(agendamentos)
-    return novo
+    appointments.append(new)
+    save_appointments(appointments)
+    return new
 
 
-@app.put("/api/agendamentos/{id}")
-def atualizar_agendamento(id: int, dados: AgendamentoUpdate):
-    agendamentos = carregar_agendamentos()
-    idx = next((i for i, a in enumerate(agendamentos) if a["id"] == id), None)
+@app.put("/api/appointments/{id}")
+def update_appointment(id: int, data: AppointmentUpdate):
+    appointments = load_appointments()
+    idx = next((i for i, a in enumerate(appointments) if a["id"] == id), None)
+
     if idx is None:
-        raise HTTPException(status_code=404, detail="Agendamento não encontrado.")
-    atualizado = agendamentos[idx]
-    if dados.nome is not None:
-        atualizado["nome"] = dados.nome.strip()
-    if dados.servico is not None:
-        atualizado["servico"] = dados.servico
-    if dados.data is not None:
-        atualizado["data"] = dados.data
-    if dados.horario is not None:
-        atualizado["horario"] = dados.horario
-    if dados.telefone is not None:
-        atualizado["telefone"] = dados.telefone.strip()
-    conflito = any(
-        a["data"] == atualizado["data"]
-        and a["horario"] == atualizado["horario"]
+        raise HTTPException(status_code=404, detail="Appointment not found.")
+
+    updated = appointments[idx]
+
+    if data.name is not None:
+        updated["name"] = data.name.strip()
+    if data.service is not None:
+        updated["service"] = data.service
+    if data.date is not None:
+        updated["date"] = data.date
+    if data.time is not None:
+        updated["time"] = data.time
+    if data.phone is not None:
+        updated["phone"] = data.phone.strip()
+
+    conflict = any(
+        a["date"] == updated["date"]
+        and a["time"] == updated["time"]
         and a["id"] != id
-        for a in agendamentos
+        for a in appointments
     )
-    if conflito:
-        raise HTTPException(status_code=409, detail="Já existe um agendamento nesse horário.")
-    agendamentos[idx] = atualizado
-    salvar_agendamentos(agendamentos)
-    return atualizado
+
+    if conflict:
+        raise HTTPException(status_code=409, detail="An appointment already exists for this time.")
+
+    appointments[idx] = updated
+    save_appointments(appointments)
+    return updated
 
 
-@app.delete("/api/agendamentos/{id}", status_code=204)
-def cancelar_agendamento(id: int):
-    agendamentos = carregar_agendamentos()
-    novos = [a for a in agendamentos if a["id"] != id]
-    if len(novos) == len(agendamentos):
-        raise HTTPException(status_code=404, detail="Agendamento não encontrado.")
-    salvar_agendamentos(novos)
+@app.delete("/api/appointments/{id}", status_code=204)
+def cancel_appointment(id: int):
+    appointments = load_appointments()
+    new_list = [a for a in appointments if a["id"] != id]
+
+    if len(new_list) == len(appointments):
+        raise HTTPException(status_code=404, detail="Appointment not found.")
+
+    save_appointments(new_list)
